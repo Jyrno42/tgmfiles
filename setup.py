@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 f = open(os.path.join(os.path.dirname(__file__), 'README.md'))
@@ -8,17 +8,13 @@ f.close()
 
 setup(
     name='tgm-files',
-    version='0.1.1',
+    version='0.1.2',
     description='Stuff...',
     long_description=readme,
     author="Thorgate",
     author_email='info@thorgate.eu',
     url='https://github.com/Jyrno42/tgmfiles',
-    packages=['tgmfiles'],
-    data_files=[
-        ('migrations', ['tgmfiles/migrations/*.py']),
-        ('staticfiles', ['tgmfiles/static']),
-    ],
+    packages=find_packages(),
 
     include_package_data=True,
     install_requires=[
