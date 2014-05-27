@@ -15,6 +15,11 @@ setup(
     author_email='info@thorgate.eu',
     url='https://github.com/Jyrno42/tgmfiles',
     packages=['tgmfiles'],
+    data_files=[
+        ('migrations', ['tgmfiles/migrations/*.py']),
+        ('staticfiles', ['tgmfiles/static']),
+    ],
+
     include_package_data=True,
     install_requires=[
         'Django',
