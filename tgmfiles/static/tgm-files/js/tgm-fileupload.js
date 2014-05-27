@@ -14,7 +14,8 @@
                 $progressBar = $el.find('.progress-bar'),
                 $imagePreview = $el.find('img'),
                 $md5sum = $el.find('input[name="' + $fileInput.attr('name') + '_md5sum"]'),
-                $fqField = $el.find('input[name="' + $fileInput.attr('name') + '_FQ"]');
+                $fqField = $el.find('input[name="' + $fileInput.attr('name') + '_FQ"]'),
+                $controls = $el.parents('.controls');
 
             var toggleAddButton = function () { };
 
@@ -27,6 +28,8 @@
                     $addBtn.prop('disabled', $container.find('.file-uploader.multi-uploader')
                         .not('.has-image').length < 1);
                 };
+
+                $controls = $addBtn.parent();
 
                 if (!$addBtn.data('uploader-initialized')) {
                     $addBtn.data('uploader-initialized', true);
@@ -60,8 +63,6 @@
                 $md5sum.val('');
                 toggleAddButton();
 
-                console.log('remove', $deleteInput, $deleteInput.prop('checked'));
-
                 return false;
             });
 
@@ -75,7 +76,7 @@
                 },
 
                 add: function(e, data) {
-                    $el.parents('.controller').find('.field-error').html('');
+                    $controls.find('.upload-field-error').html('');
                     $progressBar.css({width: '1%'});
                     $el.removeClass('has-image').removeClass('is-file').addClass('with-progress');
 
@@ -92,12 +93,15 @@
 
                     var resp = e.responseJSON;
                     if (resp && resp.errors) {
-                        var $errElem = $el.parents('.controller').find('.field-error');
+                        var $errElem = $controls.find('.upload-field-error');
+                        $controls.addClass('has-error');
+
                         if ($errElem.length === 0) {
-                            $el.parents('.controller').append($('div').addClass('field-error'));
-                            $errElem = $el.parents('.controller').find('.field-error');
+                            $controls.append($('<div></div>')
+                                .addClass('upload-field-error help-block').html(resp.errors));
+                        } else {
+                            $errElem.html(resp.errors);
                         }
-                        $errElem.html(resp.errors)
                     } else {
                         alert('Oops, file upload failed, please try again');
                     }
@@ -106,7 +110,8 @@
 
                 done: function(e, data) {
                     if (data.result && data.result.success) {
-                        $el.parents('.controller').find('.field-error').html('');
+                        $controls.find('.upload-field-error').html('');
+                        $controls.addClass('has-error');
 
                         $el.removeClass('with-progress').addClass('has-image');
                         $md5sum.val(data.result.file.md5sum);

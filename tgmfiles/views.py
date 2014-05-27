@@ -1,13 +1,14 @@
 import json
 import re
-from django.db.models import get_model, UnavailableApp
 
+from django.db.models import get_model, UnavailableApp
 from django.http.response import HttpResponse
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_text
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
-from tgmfiles.fields import TgmFileField, TgmImageField
 
+from tgmfiles.fields import TgmFileField, TgmImageField
 from tgmfiles.forms import TemporaryFileForm
 
 
@@ -58,11 +59,13 @@ class FileUploadView(View):
                     },
                 })
             else:
-                errors += [str(form.errors)]
+                for field, error_val in form.errors.items():
+                    for error_txt in error_val:
+                        errors += [force_text(error_txt)]
 
         return self.json_response({
             'success': False,
-            'errors': list(errors)
+            'errors': str(errors[0])
         }, status=403)
 
     @staticmethod
