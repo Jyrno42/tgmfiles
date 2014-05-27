@@ -75,6 +75,7 @@
                 },
 
                 add: function(e, data) {
+                    $el.parents('.controller').find('.field-error').html('');
                     $progressBar.css({width: '1%'});
                     $el.removeClass('has-image').removeClass('is-file').addClass('with-progress');
 
@@ -91,7 +92,12 @@
 
                     var resp = e.responseJSON;
                     if (resp && resp.errors) {
-                        alert(resp.errors);
+                        var $errElem = $el.parents('.controller').find('.field-error');
+                        if ($errElem.length === 0) {
+                            $el.parents('.controller').append($('div').addClass('field-error'));
+                            $errElem = $el.parents('.controller').find('.field-error');
+                        }
+                        $errElem.html(resp.errors)
                     } else {
                         alert('Oops, file upload failed, please try again');
                     }
@@ -100,6 +106,8 @@
 
                 done: function(e, data) {
                     if (data.result && data.result.success) {
+                        $el.parents('.controller').find('.field-error').html('');
+
                         $el.removeClass('with-progress').addClass('has-image');
                         $md5sum.val(data.result.file.md5sum);
                         $deleteInput.prop('checked', false);

@@ -114,7 +114,7 @@
     &.multi-uploader {
         display: none;
 
-        &.has-image {
+        &.has-image, &.with-progress {
             display: inherit;
         }
     }
