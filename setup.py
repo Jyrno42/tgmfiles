@@ -15,7 +15,9 @@ setup(
     author_email='info@thorgate.eu',
     url='https://github.com/Jyrno42/tgmfiles',
     packages=find_packages(),
-    package_data={'tgmfiles': ['static/*']},
+    package_data={'tgmfiles': [
+        'static/tgm-files/css/*',
+    ]},
     include_package_data=True,
     install_requires=[
         'Django',
