@@ -111,7 +111,7 @@
 .file-uploader.multi-uploader {
   display: none;
 }
-/* line 117, ../sass/main.scss */
-.file-uploader.multi-uploader.has-image {
+/* line 118, ../sass/main.scss */
+.file-uploader.multi-uploader.has-image, .file-uploader.multi-uploader.with-progress {
   display: inherit;
 }
