@@ -30,6 +30,11 @@ def tgm_upload_file_name(instance, filename):
     return os.path.join(get_upload_path(), uuid.uuid4().hex, filename)
 
 
+def human_readable_types(types):
+    ret = ['.%s' % (x.split('/')[-1] if "/" in x else x) for x in types]
+    return ', '.join(ret)
+
+
 class TemporaryFileWrapper(models.Model):
     """ Holds an arbitrary file and notes when it was last accessed
     """

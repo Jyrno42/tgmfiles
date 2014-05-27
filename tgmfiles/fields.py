@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import get_model
 
 from tgmfiles.forms import allowed_type
-from tgmfiles.models import get_upload_path, TemporaryFileWrapper
+from tgmfiles.models import get_upload_path, TemporaryFileWrapper, human_readable_types
 from tgmfiles.widgets import TgmSingleUploadWidget, TgmMultiUploadWidget
 
 
@@ -34,9 +34,8 @@ class TgmFormFileField(forms.FileField):
             content_type = TgmFormFileField.get_content_type(data)
             if not allowed_type(content_type, self.allowed_types):
                 # TODO: i18n and handle plurar form.
-                raise forms.ValidationError("File %s should be one of the following types [%s]" % (
-                    content_type,
-                    ', '.join(self.allowed_types)))
+                raise forms.ValidationError("File should be one of the following types [%s]" % (
+                    human_readable_types(self.allowed_types)))
 
         return data
 
@@ -60,15 +59,14 @@ class TgmFormImageField(forms.ImageField):
             content_type = TgmFormFileField.get_content_type(data)
             if not allowed_type(content_type, self.allowed_types):
                 # TODO: i18n and handle plurar form.
-                raise forms.ValidationError("File %s should be one of the following types [%s]" % (
-                    content_type,
-                    ', '.join(self.allowed_types)))
+                raise forms.ValidationError("File should be one of the following types [%s]" % (
+                    human_readable_types(self.allowed_types)))
 
         return data
 
 
 class TgmFileField(models.FileField):
-    DEFAULT_FILE_TYPES = ['pdf', 'rar', 'zip']
+    DEFAULT_FILE_TYPES = ['application/pdf', 'application/x-rar-compressed', 'application/zip']
 
     def __init__(self, fq, memory=None, allowed_types=None, widget=None, **kwargs):
         self.memory = memory

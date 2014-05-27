@@ -1,7 +1,9 @@
 import os
-from django import forms
 
-from tgmfiles.models import TemporaryFileWrapper, get_max_file_size
+from django import forms
+from django.template.defaultfilters import filesizeformat
+
+from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, human_readable_types
 
 
 def allowed_type(file_type, allowed_types):
@@ -27,14 +29,13 @@ class TemporaryFileForm(forms.ModelForm):
         if uploaded_file:
             if uploaded_file._size > get_max_file_size():
                 # TODO: Correct size for error.
-                raise forms.ValidationError("Uploaded file too large ( > XX mb )")
+                raise forms.ValidationError("Uploaded file too large ( > %s )" % filesizeformat(get_max_file_size()))
         else:
             raise forms.ValidationError("Couldn't read uploaded file")
 
         if not allowed_type(uploaded_file.content_type, self.allowed_types):
             # TODO: i18n and handle plurar form.
-            raise forms.ValidationError("File %s should be one of the following types [%s]" % (
-                uploaded_file.content_type,
-                ', '.join(self.allowed_types)))
+            raise forms.ValidationError("File should be one of the following types [%s]" % (
+                human_readable_types(self.allowed_types)))
 
         return uploaded_file
