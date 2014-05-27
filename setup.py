@@ -17,6 +17,8 @@ setup(
     packages=find_packages(),
     package_data={'tgmfiles': [
         'static/tgm-files/css/*',
+        'static/tgm-files/fonts/*',
+        'static/tgm-files/js/*',
     ]},
     include_package_data=True,
     install_requires=[
