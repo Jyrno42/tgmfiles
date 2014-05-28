@@ -8,6 +8,7 @@ from django.db import models
 from django.db.models import get_model
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 
 
