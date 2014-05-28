@@ -90,8 +90,8 @@
                 add: function(e, data) {
                     $controls.find('.upload-field-error').html('');
 
-                    if(data.originalFiles[0]['size'] && data.originalFiles[0]['size'] > parseInt(max_size, 10)) {
-                        addError($el.data('size_error'));
+                    if(data.originalFiles[0].size && data.originalFiles[0].size > parseInt(max_size, 10)) {
+                        addError($el.data('size-error'));
                     } else {
                         $progressBar.css({width: '1%'});
                         $el.removeClass('has-image').removeClass('is-file').addClass('with-progress');
