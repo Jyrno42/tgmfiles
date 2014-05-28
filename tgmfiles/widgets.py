@@ -5,7 +5,7 @@ from django.forms import widgets, CheckboxInput
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 
-from tgmfiles.models import TemporaryFileWrapper
+from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, get_size_error
 
 
 DELETE_FIELD_HTML = """
@@ -13,7 +13,8 @@ DELETE_FIELD_HTML = """
 """
 
 HTML = """
-    <div class="col-xs-12 col-md-12 well {classes}" data-upload-url="{upload_url}">
+    <div class="col-xs-12 col-md-12 well {classes}"
+        data-upload-url="{upload_url}" data-max-size="{max_size}" data-size-error="{size_error}">
 
         <label>
             <img src="{file_url}">
@@ -157,7 +158,9 @@ class TgmSingleUploadWidget(widgets.FileInput):
             fq_field_name=self.fq_field_name(name),
             md5sum_field_value=md5sum_field_value,
             delete_field=delete_field,
-            file_name=file_name
+            file_name=file_name,
+            max_size=get_max_file_size(),
+            size_error=get_size_error(),
         )
 
         return mark_safe(str(output))

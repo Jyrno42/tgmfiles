@@ -23,6 +23,11 @@ def get_max_file_size():
     return getattr(settings, 'TGM_MAX_FILE_SIZE', 2*1024*1024)
 
 
+def get_size_error():
+    # TODO: i18n
+    return "Uploaded file too large ( > %s )" % filesizeformat(get_max_file_size())
+
+
 def tgm_upload_file_name(instance, filename):
     if len(filename) > 40:
         filename = filename[-40:]
@@ -91,13 +96,3 @@ def cleanup_temporary_files(sender, instance, **kwargs):
     except IOError:
         pass
 
-
-"""
-
-class ExampleModel(models.Model):
-    name = models.CharField('Test', max_length=15)
-
-    # This creates an filefield
-    image_for_model = TgmFileField(upload_to='example-model-images', memory=TgmSessionMemory, allowed_types=['pdf', 'txt'])
-
-"""

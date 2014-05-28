@@ -6,6 +6,7 @@
         if (!$el.data('uploader-initialized')) {
             $el.data('uploader-initialized', true);
 
+            var max_size = $el.data('max-size');
             var $fileInput = $el.find('input[type="file"]');
 
             var $removeBtn = $el.find('.close'),
@@ -18,6 +19,17 @@
                 $controls = $el.parents('.controls');
 
             var toggleAddButton = function () { };
+            var addError = function (error) {
+                var $errElem = $controls.find('.upload-field-error');
+                $controls.addClass('has-error');
+
+                if ($errElem.length === 0) {
+                    $controls.append($('<div></div>')
+                        .addClass('upload-field-error help-block').html(error));
+                } else {
+                    $errElem.html(error);
+                }
+            };
 
             if (is_multi) {
                 var field_name = $fileInput.attr('name').replace(/(-?[\d]+-)[\w\-_]+$/, '');
@@ -77,10 +89,15 @@
 
                 add: function(e, data) {
                     $controls.find('.upload-field-error').html('');
-                    $progressBar.css({width: '1%'});
-                    $el.removeClass('has-image').removeClass('is-file').addClass('with-progress');
 
-                    data.submit();
+                    if(data.originalFiles[0]['size'] && data.originalFiles[0]['size'] > parseInt(max_size, 10)) {
+                        addError($el.data('size_error'));
+                    } else {
+                        $progressBar.css({width: '1%'});
+                        $el.removeClass('has-image').removeClass('is-file').addClass('with-progress');
+                        data.submit();
+                    }
+
                 },
 
                 progress: function(e, data) {
@@ -93,17 +110,9 @@
 
                     var resp = e.responseJSON;
                     if (resp && resp.errors) {
-                        var $errElem = $controls.find('.upload-field-error');
-                        $controls.addClass('has-error');
-
-                        if ($errElem.length === 0) {
-                            $controls.append($('<div></div>')
-                                .addClass('upload-field-error help-block').html(resp.errors));
-                        } else {
-                            $errElem.html(resp.errors);
-                        }
+                        addError(resp.errors);
                     } else {
-                        alert('Oops, file upload failed, please try again');
+                        addError('Oops, file upload failed, please try again');
                     }
                     toggleAddButton();
                 },
