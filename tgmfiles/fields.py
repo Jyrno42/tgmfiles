@@ -128,8 +128,6 @@ class TgmFileField(models.FileField):
         return None
 
     def pre_save(self, model_instance, add):
-        print('instance', model_instance)
-
         file = super(models.FileField, self).pre_save(model_instance, add)
 
         # If the file provided resides in the temporary files directory.
@@ -151,6 +149,10 @@ class TgmFileField(models.FileField):
                 file.save(filename, image_file, save=False)
 
                 file.field.generate_filename = old_pointer
+        elif file and not file._committed:
+            # Commit the file to storage prior to saving the model
+            file.save(file.name, file, save=False)
+
         return file
 
 
