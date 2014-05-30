@@ -19,25 +19,34 @@
   color: #a8a8a8;
   border: 3px dashed;
   font-weight: bold;
-}
-/* line 24, ../sass/main.scss */
-.file-uploader .drag-target-overlay > div {
-  display: table-cell;
   text-align: center;
+}
+/* line 25, ../sass/main.scss */
+.file-uploader .drag-target-overlay:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.25em;
+  /* Adjusts for spacing */
+}
+/* line 33, ../sass/main.scss */
+.file-uploader .drag-target-overlay > div {
+  display: inline-block;
   vertical-align: middle;
 }
-/* line 32, ../sass/main.scss */
+/* line 40, ../sass/main.scss */
 .file-uploader.drag-active .drag-target-overlay {
-  display: table;
+  display: block;
 }
-/* line 37, ../sass/main.scss */
+/* line 45, ../sass/main.scss */
 .file-uploader label {
   display: block;
   min-height: 100px;
   max-height: 150px;
   overflow: hidden;
 }
-/* line 44, ../sass/main.scss */
+/* line 52, ../sass/main.scss */
 .file-uploader .close {
   display: none;
   color: #8b1313;
@@ -58,19 +67,19 @@
   -o-border-radius: 25px;
   border-radius: 25px;
 }
-/* line 59, ../sass/main.scss */
+/* line 67, ../sass/main.scss */
 .file-uploader .close:hover {
   border-color: #e9e9e9;
   background: #e9e9e9;
 }
-/* line 65, ../sass/main.scss */
+/* line 73, ../sass/main.scss */
 .file-uploader .file-display {
   cursor: pointer;
   z-index: 9;
   font-size: 72px;
   display: none;
 }
-/* line 71, ../sass/main.scss */
+/* line 79, ../sass/main.scss */
 .file-uploader .file-display span {
   display: block;
   font-size: 14px;
@@ -78,63 +87,63 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* line 81, ../sass/main.scss */
+/* line 89, ../sass/main.scss */
 .file-uploader img {
   z-index: 8;
   display: none;
   width: 100%;
   height: auto;
 }
-/* line 89, ../sass/main.scss */
+/* line 97, ../sass/main.scss */
 .file-uploader .upload-link {
   cursor: pointer;
   display: block;
   z-index: 9;
   font-size: 72px;
 }
-/* line 96, ../sass/main.scss */
+/* line 104, ../sass/main.scss */
 .file-uploader .progress-area {
   display: none;
 }
-/* line 99, ../sass/main.scss */
+/* line 107, ../sass/main.scss */
 .file-uploader .progress-area .progress {
   margin: 0;
 }
-/* line 105, ../sass/main.scss */
+/* line 113, ../sass/main.scss */
 .file-uploader.has-image img {
   display: inherit;
 }
-/* line 109, ../sass/main.scss */
+/* line 117, ../sass/main.scss */
 .file-uploader.has-image .upload-link {
   display: none;
 }
-/* line 113, ../sass/main.scss */
+/* line 121, ../sass/main.scss */
 .file-uploader.has-image .close {
   display: inherit;
 }
-/* line 121, ../sass/main.scss */
+/* line 129, ../sass/main.scss */
 .file-uploader.with-progress img,
 .file-uploader.with-progress .upload-link,
 .file-uploader.with-progress .close {
   display: none;
 }
-/* line 125, ../sass/main.scss */
+/* line 133, ../sass/main.scss */
 .file-uploader.with-progress .progress-area {
   display: inherit;
 }
-/* line 131, ../sass/main.scss */
+/* line 139, ../sass/main.scss */
 .file-uploader.is-file.has-image img {
   display: none;
 }
-/* line 134, ../sass/main.scss */
+/* line 142, ../sass/main.scss */
 .file-uploader.is-file.has-image .file-display {
   display: block;
 }
-/* line 139, ../sass/main.scss */
+/* line 147, ../sass/main.scss */
 .file-uploader.multi-uploader {
   display: none;
 }
-/* line 143, ../sass/main.scss */
+/* line 151, ../sass/main.scss */
 .file-uploader.multi-uploader.has-image, .file-uploader.multi-uploader.with-progress {
   display: inherit;
 }

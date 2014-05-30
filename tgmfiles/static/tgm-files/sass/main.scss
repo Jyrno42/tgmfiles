@@ -20,17 +20,25 @@
         color: #a8a8a8;
         border: 3px dashed;
         font-weight: bold;
+        text-align: center;
+
+        &:before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+            margin-right: -0.25em; /* Adjusts for spacing */
+        }
 
         > div {
-            display: table-cell;
-            text-align: center;
+            display: inline-block;
             vertical-align: middle;
         }
     }
 
     &.drag-active {
         .drag-target-overlay {
-            display: table;
+            display: block;
         }
     }
 
