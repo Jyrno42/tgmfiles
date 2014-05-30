@@ -4,6 +4,7 @@ from django import forms
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import get_model
+from django.utils.translations import ungettext
 
 from tgmfiles.forms import allowed_type
 from tgmfiles.models import get_upload_path, TemporaryFileWrapper, human_readable_types
@@ -16,26 +17,30 @@ class TgmFormFileField(forms.FileField):
         self.allowed_types = allowed_types
         self.widget = widget(fq=self.field_query, is_image=False)
 
-        super().__init__(*args, **kwargs)
+        super(TgmFormFileField, self).__init__(*args, **kwargs)
 
     @staticmethod
-    def get_content_type(file):
+    def get_content_type(the_file):
         import magic
-        return magic.from_file(file.path, mime=True)
+        return magic.from_file(the_file.path, mime=True)
+
+    @staticmethod
+    def file_type_error(content_type, allowed_types):
+        raise forms.ValidationError(ungettext("File should be a %s.",
+                                              "File should be one of the following types [%s]",
+                                              len(allowed_types)) % (human_readable_types(allowed_types)))
 
     def to_python(self, data):
         if type(data) == str and data[:3] == 'id:':
             # Pre uploaded linked file.
             return TemporaryFileWrapper.get_image_from_id(data[3:], self.field_query)
 
-        data = super().to_python(data)
+        data = super(TgmFormFileField, self).to_python(data)
 
         if data:
             content_type = TgmFormFileField.get_content_type(data)
             if not allowed_type(content_type, self.allowed_types):
-                # TODO: i18n and handle plurar form.
-                raise forms.ValidationError("File should be one of the following types [%s]" % (
-                    human_readable_types(self.allowed_types)))
+                self.file_type_error(content_type, self.allowed_types)
 
         return data
 
@@ -46,21 +51,18 @@ class TgmFormImageField(forms.ImageField):
         self.allowed_types = allowed_types
         self.widget = widget(fq=self.field_query, is_image=True)
 
-        super().__init__(*args, **kwargs)
+        super(TgmFormImageField, self).__init__(*args, **kwargs)
 
     def to_python(self, data):
         if type(data) == str and data[:3] == 'id:':
             # Pre uploaded linked file.
             return TemporaryFileWrapper.get_image_from_id(data[3:], self.field_query)
 
-        data = super().to_python(data)
-
+        data = super(TgmFormImageField, self).to_python(data)
         if data:
             content_type = TgmFormFileField.get_content_type(data)
             if not allowed_type(content_type, self.allowed_types):
-                # TODO: i18n and handle plurar form.
-                raise forms.ValidationError("File should be one of the following types [%s]" % (
-                    human_readable_types(self.allowed_types)))
+                TgmFormFileField.file_type_error(content_type, self.allowed_types)
 
         return data
 
@@ -128,32 +130,34 @@ class TgmFileField(models.FileField):
         return None
 
     def pre_save(self, model_instance, add):
-        file = super(models.FileField, self).pre_save(model_instance, add)
+        the_file = super(models.FileField, self).pre_save(model_instance, add)
 
         # If the file provided resides in the temporary files directory.
-        if file and get_upload_path() in file.name:
+        if the_file and get_upload_path() in the_file.name:
             new_pointer = self.get_file_path_pointer(model_instance)
             if new_pointer is not None:
                 # This currently replaces the filename generator function
                 # with the correct one for the model field and then restores it after.
                 #
-                # FIXME: I know this is insane, but i have no idea how to do it better
+                # I know this is insane, but i have no idea how to do it better
                 # (or why the function points to tgm_upload_file_name) so i'll let this
                 #  one slide for now.
-                old_pointer = file.field.generate_filename
-                file.field.generate_filename = new_pointer
+                old_pointer = the_file.field.generate_filename
+                the_file.field.generate_filename = new_pointer
 
-                path, filename = os.path.split(file.name)
+                path, filename = os.path.split(the_file.name)
 
-                image_file = ContentFile(file.file.read(), file.name)
-                file.save(filename, image_file, save=False)
+                image_file = ContentFile(the_file.file.read(), the_file.name)
+                the_file.save(filename, image_file, save=False)
 
-                file.field.generate_filename = old_pointer
-        elif file and not file._committed:
+                the_file.field.generate_filename = old_pointer
+        elif the_file and not the_file._committed:
             # Commit the file to storage prior to saving the model
-            file.save(file.name, file, save=False)
+            # This makes this model work correctly with other widgets
+            # (e.g. a plain image upload in admin)
+            the_file.save(the_file.name, the_file, save=False)
 
-        return file
+        return the_file
 
 
 class TgmImageField(TgmFileField):

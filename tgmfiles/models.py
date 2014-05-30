@@ -25,8 +25,7 @@ def get_max_file_size():
 
 
 def get_size_error():
-    # TODO: i18n
-    return "Uploaded file too large ( > %s )" % filesizeformat(get_max_file_size())
+    return _("Uploaded file too large ( > %s )") % filesizeformat(get_max_file_size())
 
 
 def tgm_upload_file_name(instance, filename):
@@ -45,9 +44,6 @@ class TemporaryFileWrapper(models.Model):
     """ Holds an arbitrary file and notes when it was last accessed
     """
     file = models.FileField(upload_to=tgm_upload_file_name)
-
-    # session = models.ForeignKey(Session, blank=True, null=True)
-    # user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
 
     modified = models.DateTimeField(auto_now=True)
     md5sum = models.CharField(max_length=36, unique=True)

@@ -52,5 +52,9 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# pycharm config
+.idea
+
+# Caches
 __pycache__
 tgmfiles/static/tgm-files/.sass-cache
