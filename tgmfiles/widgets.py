@@ -69,6 +69,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
     def __init__(self, fq, is_image, attrs=None):
         self.field_query = fq
         self.is_image = is_image
+        self.force_delete_field = False
 
         super(TgmSingleUploadWidget, self).__init__(attrs)
 
@@ -144,7 +145,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
                 func = getattr(value.instance, 'is_tgm_image', None)
 
                 if func and callable(func):
-                    return func(self.fq)
+                    return func(self.get_fq())
                 else:
                     return bool(func)
 
@@ -167,7 +168,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
 
         classes = ['file-uploader', self.widget_class, 'has-image' if file_url else '']
 
-        if file_url and not self.get_is_image():
+        if file_url and not self.get_is_image(value):
             classes.append('is-file')
 
         upload_url = reverse('tgm-file-upload')
@@ -200,4 +201,7 @@ class TgmMultiUploadWidget(TgmSingleUploadWidget):
     widget_class = 'multi-uploader'
 
     def render_delete_field(self, name, delete_val):
+        if self.force_delete_field:
+            return super(TgmMultiUploadWidget, self).render_delete_field(name, delete_val)
+
         return ''
