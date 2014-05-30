@@ -16,7 +16,8 @@
                 $imagePreview = $el.find('img'),
                 $md5sum = $el.find('input[name="' + $fileInput.attr('name') + '_md5sum"]'),
                 $fqField = $el.find('input[name="' + $fileInput.attr('name') + '_FQ"]'),
-                $controls = $el.parents('.controls');
+                $controls = $el.parents('.controls'),
+                $dropContainer = $el;
 
             var toggleAddButton = function () { };
             var addError = function (error) {
@@ -34,6 +35,7 @@
             if (is_multi) {
                 var field_name = $fileInput.attr('name').replace(/(-?[\d]+-)[\w\-_]+$/, '');
                 var $addBtn = $el.parents('form').find('[data-add-new="' + field_name + '"]');
+                $dropContainer = $el.parents('form').find('[data-drop-area="' + field_name + '"]');
                 var $container = $el.parents('form').find('[data-multi-container="' + field_name + '"]');
 
                 toggleAddButton = function () {
@@ -79,10 +81,10 @@
             });
 
             $(document).on('dragover', function () {
-                $el.addClass('drag-active');
+                $dropContainer.addClass('drag-active');
             });
-            $(document).on('dragleave', function () {
-                $el.removeClass('drag-active');
+            $(document).on('dragend', function () {
+                $dropContainer.removeClass('drag-active');
             });
 
             $fileInput.fileupload({
@@ -93,10 +95,6 @@
 
                 formData: {
                     'fq': $fqField.val()
-                },
-
-                dragover: function(e, a) {
-                    $el.css('border', "5px solid red");
                 },
 
                 add: function(e, data) {
@@ -160,6 +158,13 @@
         });
         $('.file-uploader.multi-uploader').each(function(i, el) {
             setup($(el), true);
+        });
+
+        $(document).on('drop', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            $('.drag-active').removeClass('drag-active');
         });
     });
 
