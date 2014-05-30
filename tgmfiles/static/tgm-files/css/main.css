@@ -4,7 +4,7 @@
   text-align: center;
 }
 /* line 8, ../sass/main.scss */
-.file-uploader input[type="file"] {
+.file-uploader input[type="file"], .file-uploader input[type="checkbox"] {
   display: none;
 }
 /* line 12, ../sass/main.scss */
@@ -15,7 +15,7 @@
   right: 0;
   top: 0;
   bottom: 0;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.95);
   color: #a8a8a8;
   border: 3px dashed;
   font-weight: bold;
