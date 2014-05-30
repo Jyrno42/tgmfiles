@@ -6,7 +6,6 @@ from django.utils.encoding import force_text
 from django.utils.encoding import smart_unicode
 from django.utils.safestring import mark_safe
 
-from tgmfiles.fields import TgmFileField
 from tgmfiles.forms import allowed_type
 from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, get_size_error
 
@@ -168,7 +167,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
 
         classes = ['file-uploader', self.widget_class, 'has-image' if file_url else '']
 
-        if file_url and not self.is_image:
+        if file_url and not self.get_is_image():
             classes.append('is-file')
 
         upload_url = reverse('tgm-file-upload')
