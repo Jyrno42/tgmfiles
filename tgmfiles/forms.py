@@ -5,6 +5,9 @@ from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, get_size_er
 
 
 def allowed_type(file_type, allowed_types):
+    if '*' in allowed_types:
+        return True
+
     if type(file_type) is not str:
         file_type = str(file_type, 'utf8')
 
