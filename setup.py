@@ -24,7 +24,6 @@ setup(
     install_requires=[
         'Django',
         'Pillow',
-        'python-magic==0.4.6',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

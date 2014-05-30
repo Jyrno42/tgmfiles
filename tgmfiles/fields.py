@@ -21,8 +21,12 @@ class TgmFormFileField(forms.FileField):
 
     @staticmethod
     def get_content_type(the_file):
-        import magic
-        return magic.from_file(the_file.path, mime=True)
+        try:
+            temporary = TemporaryFileWrapper.objects.get(file=the_file)
+            return temporary.content_type
+
+        except TemporaryFileWrapper.DoesNotExist:
+            return 'application/unknown'
 
     @staticmethod
     def file_type_error(content_type, allowed_types):
@@ -170,7 +174,7 @@ class TgmFileField(models.FileField):
             the_file.save(the_file.name, the_file, save=False)
 
         try:
-            temp_image = TemporaryFileWrapper.objects.get(file=the_file.name)
+            temp_image = TemporaryFileWrapper.objects.get(file=the_file)
 
         except TemporaryFileWrapper.MultipleObjectsReturned:
             temp_image = TemporaryFileWrapper.objects.filter(file=the_file.name)[0]
