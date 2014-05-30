@@ -135,12 +135,19 @@ class TgmSingleUploadWidget(widgets.FileInput):
             return True
 
         if value:
+            from tgmfiles.fields import TgmFileField
+
             if hasattr(value, 'instance') and isinstance(value.instance, TemporaryFileWrapper):
                 # Case 1: Temporary-file in form.
                 return allowed_type(value.instance.content_type, TgmFileField.handle_allowed_types(['type:image']))
             elif hasattr(value, "url"):
                 # Case 2: Pre existing linked-file in form.
-                return allowed_type(value.instance.content_type, TgmFileField.handle_allowed_types(['type:image']))
+                func = getattr(value.instance, 'is_tgm_image', None)
+
+                if func and callable(func):
+                    return func(self.fq)
+                else:
+                    return bool(func)
 
         return False
 

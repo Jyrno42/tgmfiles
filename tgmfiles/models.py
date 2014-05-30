@@ -58,9 +58,6 @@ class TemporaryFileWrapper(models.Model):
 
         return md5.hexdigest()
 
-    def is_image(self):
-        return
-
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.md5sum = self.get_hash()
 
