@@ -9,6 +9,7 @@ from django.db.models import get_model
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.template.defaultfilters import filesizeformat
+from django.utils.encoding import smart_unicode
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -25,7 +26,7 @@ def get_max_file_size():
 
 
 def get_size_error():
-    return _("Uploaded file too large ( > %s )") % filesizeformat(get_max_file_size())
+    return smart_unicode(_("Uploaded file too large ( > %s )") % filesizeformat(get_max_file_size()))
 
 
 def tgm_upload_file_name(instance, filename):

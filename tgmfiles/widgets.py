@@ -3,6 +3,7 @@ import os
 from django.core.urlresolvers import reverse
 from django.forms import widgets, CheckboxInput
 from django.utils.encoding import force_text
+from django.utils.encoding import smart_unicode
 from django.utils.safestring import mark_safe
 
 from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, get_size_error
@@ -100,7 +101,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
             return TemporaryFileWrapper.get_image_from_id(upload[3:], self.field_query)
 
         if fq != self.get_fq():
-            raise Exception('For some reason FQ value is wrong...')
+            raise Exception(smart_unicode('For some reason FQ value is wrong...'))
 
         was_deleted = CheckboxInput().value_from_datadict(data, files, self.clear_checkbox_name(name))
 
@@ -169,7 +170,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
             size_error=get_size_error(),
         )
 
-        return mark_safe(str(output))
+        return mark_safe(smart_unicode(output))
 
 
 class TgmMultiUploadWidget(TgmSingleUploadWidget):
