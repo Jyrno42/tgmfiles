@@ -154,7 +154,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
 
         delete_field = self.render_delete_field(name, delete_val)
 
-        output = HTML.format(
+        output = smart_unicode(HTML).format(
             name=name,
             file_url=file_url,
             element_id=element_id,
