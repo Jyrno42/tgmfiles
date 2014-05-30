@@ -49,7 +49,7 @@ class TemporaryFileWrapper(models.Model):
     modified = models.DateTimeField(auto_now=True)
     md5sum = models.CharField(max_length=36, unique=True)
 
-    content_type = models.CharField('content_type', default='application/unknown')
+    content_type = models.CharField('content_type', max_length=128, default='application/unknown')
 
     def get_hash(self):
         md5 = hashlib.md5()
