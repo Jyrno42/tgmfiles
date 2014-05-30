@@ -9,10 +9,7 @@ def allowed_type(file_type, allowed_types):
     if '*' in allowed_types:
         return True
 
-    if type(file_type) is not str:
-        file_type = str(file_type, 'utf8')
-
-    return file_type in allowed_types
+    return smart_unicode(file_type, 'utf8') in allowed_types
 
 
 class TemporaryFileForm(forms.ModelForm):
