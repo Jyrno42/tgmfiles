@@ -35,7 +35,7 @@ class FileUploadView(View):
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+        return super(FileUploadView, self).dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         field_component = self.parse_field_component(request.POST.get('fq', None))

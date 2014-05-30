@@ -68,7 +68,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
         self.field_query = fq
         self.is_image = is_image
 
-        super().__init__(attrs)
+        super(TgmSingleUploadWidget, self).__init__(attrs)
 
     @staticmethod
     def clear_checkbox_name(name):
