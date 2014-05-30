@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
 
 from tgmfiles.fields import TgmFileField, TgmImageField
-from tgmfiles.forms import TemporaryFileForm
+from tgmfiles.forms import TemporaryFileForm, allowed_type
 
 
 class FileUploadView(View):
@@ -47,6 +47,7 @@ class FileUploadView(View):
             form = TemporaryFileForm(field_value, request.POST, request.FILES)
             if form.is_valid():
                 instance = form.save()
+                is_image_type = allowed_type(instance.content_type, TgmFileField.handle_allowed_types(['type:image']))
 
                 return self.json_response({
                     'success': True,
@@ -55,7 +56,7 @@ class FileUploadView(View):
                         'md5sum': instance.md5sum,
                         'url': instance.file.url,
                         'file_name': instance.file.name,
-                        'instance_type': 'image' if isinstance(field_value, TgmImageField) else 'file'
+                        'instance_type': 'image' if is_image_type else 'file'
                     },
                 })
             else:
