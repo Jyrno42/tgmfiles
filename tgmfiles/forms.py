@@ -38,14 +38,13 @@ class TemporaryFileForm(forms.ModelForm):
             from tgmfiles.fields import TgmFormFileField
             TgmFormFileField.file_type_error(uploaded_file.content_type, self.allowed_types)
 
-        self.content_type = uploaded_file.content_type
+        if uploaded_file:
+            self.cleaned_data['content_type'] = uploaded_file.content_type
+        else:
+            self.cleaned_data['content_type'] = 'application/unknown'
 
         return uploaded_file
 
     def clean_content_type(self):
         uploaded_file = self.cleaned_data.get('file', False)
 
-        if uploaded_file:
-            return uploaded_file.content_type
-        else:
-            return 'application/unknown'
