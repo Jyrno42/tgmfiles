@@ -142,6 +142,47 @@
         }
     }
 
+    function setupDragDrop() {
+        var $targets = $('.tgm-drag-target');
+
+        $(document).off('dragenter.tgm-files').off('dragover.tgm-files').off('drop.tgm-files');
+        $targets.off('dragenter.tgm-files').off('dragover.tgm-files').off('drop.tgm-files');
+
+        $targets.on('dragenter.tgm-files', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).css('border', '2px solid #0B85A1');
+        }).on('dragover.tgm-files', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }).on('drop.tgm-files', function (e) {
+            $(this).css('border', '2px dotted #0B85A1');
+            e.preventDefault();
+            var files = e.originalEvent.dataTransfer.files;
+            console.log('files');
+             
+            //We need to send dropped files to Server
+            // handleFileUpload(files,obj);
+        });
+
+        $(document).on('dragenter.tgm-files', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        });
+
+        $(document).on('dragover.tgm-files', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            $targets.css('border', '2px dotted #0B85A1');
+        });
+
+        $(document).on('drop.tgm-files', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        });
+    }
+
     $(document).ready(function () {
         $('.file-uploader.single-uploader').each(function(i, el) {
             setup($(el));
@@ -149,6 +190,8 @@
         $('.file-uploader.multi-uploader').each(function(i, el) {
             setup($(el), true);
         });
+
+        setupDragDrop();
     });
 
 })(window.jQuery);

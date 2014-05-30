@@ -4,7 +4,7 @@ from django import forms
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import get_model
-from django.utils.translations import ungettext
+from django.utils.translation import ungettext
 
 from tgmfiles.forms import allowed_type
 from tgmfiles.models import get_upload_path, TemporaryFileWrapper, human_readable_types
