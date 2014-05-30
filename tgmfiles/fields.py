@@ -94,8 +94,10 @@ class TgmFileField(models.FileField):
         :param real_instance: An instance of the model that will be saved to the database.
         :param temporary_instance: An instance of TemporaryImageWrapper.
         :param raw_file: The raw file which was uploaded, can be None.
+
+        :returns: bool True if you want to automaticallly delete the temporary file after linking.
         """
-        print('Real', real_instance, 'temp', temporary_instance, raw_file)
+        return True
 
     @staticmethod
     def handle_allowed_types(allowed_types):
@@ -173,16 +175,8 @@ class TgmFileField(models.FileField):
             # (e.g. a plain image upload in admin)
             the_file.save(the_file.name, the_file, save=False)
 
-        try:
-            temp_image = TemporaryFileWrapper.objects.get(file=the_file)
-
-        except TemporaryFileWrapper.MultipleObjectsReturned:
-            temp_image = TemporaryFileWrapper.objects.filter(file=the_file.name)[0]
-
-        except TemporaryFileWrapper.DoesNotExist:
-            temp_image = None
-
-        self.post_link(model_instance, temp_image, the_file)
+        if self.post_link(model_instance, the_file.instance, the_file):
+            the_file.instance.delete()
 
         return the_file
 

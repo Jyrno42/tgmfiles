@@ -6,6 +6,8 @@ from django.utils.encoding import force_text
 from django.utils.encoding import smart_unicode
 from django.utils.safestring import mark_safe
 
+from tgmfiles.fields import TgmFileField
+from tgmfiles.forms import allowed_type
 from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, get_size_error
 
 
@@ -126,6 +128,21 @@ class TgmSingleUploadWidget(widgets.FileInput):
             clear_checkbox_name=self.clear_checkbox_name(name),
             delete_val=delete_val
         )
+
+    def get_is_image(self, value):
+        if self.is_image:
+            # Don't use the file type guesser if it's a image.
+            return True
+
+        if value:
+            if hasattr(value, 'instance') and isinstance(value.instance, TemporaryFileWrapper):
+                # Case 1: Temporary-file in form.
+                return allowed_type(value.instance.content_type, TgmFileField.handle_allowed_types(['type:image']))
+            elif hasattr(value, "url"):
+                # Case 2: Pre existing linked-file in form.
+                return allowed_type(value.instance.content_type, TgmFileField.handle_allowed_types(['type:image']))
+
+        return False
 
     def render(self, name, value, attrs=None):
         element_id = 'id'

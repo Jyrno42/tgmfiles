@@ -92,8 +92,8 @@ class TemporaryFileWrapper(models.Model):
 
 @receiver(post_delete, sender=TemporaryFileWrapper)
 def cleanup_temporary_files(sender, instance, **kwargs):
-    instance.uploaded_file.close()
-    storage, path = instance.uploaded_file.storage, instance.uploaded_file.path
+    instance.file.close()
+    storage, path = instance.file.storage, instance.file.path
     try:
         storage.delete(path)
     except IOError:
