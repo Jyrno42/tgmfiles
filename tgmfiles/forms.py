@@ -1,11 +1,7 @@
-import os
-
 from django import forms
-from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 
-from tgmfiles.fields import TgmFormFileField
-from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, human_readable_types, get_size_error
+from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, get_size_error
 
 
 def allowed_type(file_type, allowed_types):
@@ -35,6 +31,7 @@ class TemporaryFileForm(forms.ModelForm):
             raise forms.ValidationError(_("Couldn't read uploaded file"))
 
         if not allowed_type(uploaded_file.content_type, self.allowed_types):
+            from tgmfiles.fields import TgmFormFileField
             TgmFormFileField.file_type_error(uploaded_file.content_type, self.allowed_types)
 
         return uploaded_file
