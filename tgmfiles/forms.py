@@ -19,7 +19,7 @@ class TemporaryFileForm(forms.ModelForm):
     class Meta:
         model = TemporaryFileWrapper
 
-        fields = ('file', )
+        fields = ('file', 'content_type')
 
     def __init__(self, real_field, *args, **kwargs):
         self.allowed_types = real_field.allowed_types
@@ -38,4 +38,14 @@ class TemporaryFileForm(forms.ModelForm):
             from tgmfiles.fields import TgmFormFileField
             TgmFormFileField.file_type_error(uploaded_file.content_type, self.allowed_types)
 
+        self.content_type = uploaded_file.content_type
+
         return uploaded_file
+
+    def clean_content_type(self):
+        uploaded_file = self.cleaned_data.get('file', False)
+
+        if uploaded_file:
+            return uploaded_file.content_type
+        else:
+            return 'application/unknown'

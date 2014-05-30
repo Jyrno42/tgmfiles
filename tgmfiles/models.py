@@ -49,12 +49,17 @@ class TemporaryFileWrapper(models.Model):
     modified = models.DateTimeField(auto_now=True)
     md5sum = models.CharField(max_length=36, unique=True)
 
+    content_type = models.CharField('content_type', default='application/unknown')
+
     def get_hash(self):
         md5 = hashlib.md5()
         for chunk in self.file.chunks():
             md5.update(chunk)
 
         return md5.hexdigest()
+
+    def is_image(self):
+        return
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.md5sum = self.get_hash()

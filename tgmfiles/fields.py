@@ -70,8 +70,7 @@ class TgmFormImageField(forms.ImageField):
 class TgmFileField(models.FileField):
     DEFAULT_FILE_TYPES = ['application/pdf', 'application/x-rar-compressed', 'application/zip']
 
-    def __init__(self, fq, memory=None, allowed_types=None, widget=None, **kwargs):
-        self.memory = memory
+    def __init__(self, fq, post_link=None, allowed_types=None, widget=None, **kwargs):
         self.widget = widget or self.get_widget_class()
         self.field_query = fq
         self.max_length = 128
@@ -79,7 +78,20 @@ class TgmFileField(models.FileField):
         # Used for validators
         self.allowed_types = self.handle_allowed_types(allowed_types or self.DEFAULT_FILE_TYPES)
 
+        if post_link is not None and callable(post_link):
+            setattr(self, 'post_link', post_link)
+
         super(TgmFileField, self).__init__(**kwargs)
+
+    def post_link(self, real_instance, temporary_instance, raw_file):
+        """ This function is used to provide a way for
+            developers to do some needed post processing for files.
+
+        :param real_instance: An instance of the model that will be saved to the database.
+        :param temporary_instance: An instance of TemporaryImageWrapper.
+        :param raw_file: The raw file which was uploaded, can be None.
+        """
+        print('Real', real_instance, 'temp', temporary_instance, raw_file)
 
     @staticmethod
     def handle_allowed_types(allowed_types):
@@ -156,6 +168,17 @@ class TgmFileField(models.FileField):
             # This makes this model work correctly with other widgets
             # (e.g. a plain image upload in admin)
             the_file.save(the_file.name, the_file, save=False)
+
+        try:
+            temp_image = TemporaryFileWrapper.objects.get(file=the_file.name)
+
+        except TemporaryFileWrapper.MultipleObjectsReturned:
+            temp_image = TemporaryFileWrapper.objects.filter(file=the_file.name)[0]
+
+        except TemporaryFileWrapper.DoesNotExist:
+            temp_image = None
+
+        self.post_link(model_instance, temp_image, the_file)
 
         return the_file
 
