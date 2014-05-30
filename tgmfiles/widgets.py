@@ -16,6 +16,12 @@ HTML = """
     <div class="col-xs-12 col-md-12 well {classes}"
         data-upload-url="{upload_url}" data-max-size="{max_size}" data-size-error="{size_error}">
 
+        <div class="drag-target-overlay">
+            <div>
+                Drop files to upload
+            </div>
+        </div>
+
         <label>
             <img src="{file_url}">
 

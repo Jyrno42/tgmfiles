@@ -9,6 +9,31 @@
         display: none;
     }
 
+    .drag-target-overlay {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: #fff;
+        color: #a8a8a8;
+        border: 3px dashed;
+        font-weight: bold;
+
+        > div {
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+        }
+    }
+
+    &.drag-active {
+        .drag-target-overlay {
+            display: table;
+        }
+    }
+
     label {
         display: block;
         min-height: 100px;
@@ -28,7 +53,7 @@
         top: -12px;
         right: -12px;
 
-        @include single-box-shadow(rgba(0, 0, 0, .3), 1px, 1px, 0);
+        @include single-box-shadow(rgba(0, 0, 0, 0.3), 1px, 1px, 0);
         @include border-radius(25px);
 
         &:hover {
