@@ -4,7 +4,7 @@ import re
 from django.db.models import get_model, UnavailableApp
 from django.http.response import HttpResponse
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
+from django.utils.encoding import force_text, smart_unicode
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
 
@@ -66,7 +66,7 @@ class FileUploadView(View):
 
         return self.json_response({
             'success': False,
-            'errors': str(errors[0])
+            'errors': smart_unicode(errors[0])
         }, status=403)
 
     @staticmethod

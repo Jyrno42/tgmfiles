@@ -9,6 +9,10 @@
         display: none;
     }
 
+    .display-with-file {
+        display: none;
+    }
+
     .drag-target-overlay {
         display: none;
         position: absolute;
@@ -86,12 +90,14 @@
         }
     }
 
-    img {
-        z-index: 8;
+    .image-area {
         display: none;
+        z-index: 8;
 
-        width: 100%;
-        height: auto;
+        img {
+            width: 100%;
+            height: auto;
+        }
     }
 
     .upload-link {
@@ -110,7 +116,7 @@
     }
 
     &.has-image {
-        img {
+        .image-area {
             display: inherit;
         }
 
@@ -121,10 +127,14 @@
         .close {
             display: inherit;
         }
+
+        .display-with-file {
+            display: inherit;
+        }
     }
 
     &.with-progress {
-        img,
+        .image-area,
         .upload-link,
         .close {
             display: none;
@@ -136,7 +146,7 @@
     }
 
     &.is-file.has-image {
-        img {
+        .image-area {
             display: none;
         }
         .file-display {

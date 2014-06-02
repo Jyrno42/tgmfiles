@@ -33,7 +33,8 @@ def tgm_upload_file_name(instance, filename):
     if len(filename) > 40:
         filename = filename[-40:]
 
-    return os.path.join(get_upload_path(), uuid.uuid4().hex, filename)
+    uuid_hex = uuid.uuid4().hex
+    return os.path.join(get_upload_path(), uuid_hex[:3], uuid_hex[3:], filename)
 
 
 def human_readable_types(types):
@@ -50,6 +51,13 @@ class TemporaryFileWrapper(models.Model):
     md5sum = models.CharField(max_length=36, unique=True)
 
     content_type = models.CharField('content_type', max_length=128, default='application/unknown')
+    linked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return '%s%s' % (
+            '[LINKED] ' if self.linked else '',
+            self.file.name,
+        )
 
     def get_hash(self):
         md5 = hashlib.md5()
@@ -63,6 +71,8 @@ class TemporaryFileWrapper(models.Model):
 
         if not self.pk or TemporaryFileWrapper.objects.exclude(id=self.pk).filter(md5sum=self.md5sum).exists():
             try:
+                # If replacing pk, we mark the file as unlinked.
+                self.linked = False
                 self.pk = TemporaryFileWrapper.objects.exclude(id=self.pk).get(md5sum=self.md5sum).pk
             except TemporaryFileWrapper.DoesNotExist:
                 pass

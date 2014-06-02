@@ -1,4 +1,5 @@
 import os
+import six
 
 from django import forms
 from django.core.files.base import ContentFile
@@ -35,7 +36,7 @@ class TgmFormFileField(forms.FileField):
                                               len(allowed_types)) % (human_readable_types(allowed_types)))
 
     def to_python(self, data):
-        if type(data) == str and data[:3] == 'id:':
+        if isinstance(data, six.string_types) and data[:3] == 'id:':
             # Pre uploaded linked file.
             return TemporaryFileWrapper.get_image_from_id(data[3:], self.field_query)
 
@@ -58,7 +59,7 @@ class TgmFormImageField(forms.ImageField):
         super(TgmFormImageField, self).__init__(*args, **kwargs)
 
     def to_python(self, data):
-        if type(data) == str and data[:3] == 'id:':
+        if isinstance(data, six.string_types) and data[:3] == 'id:':
             # Pre uploaded linked file.
             return TemporaryFileWrapper.get_image_from_id(data[3:], self.field_query)
 
@@ -95,7 +96,7 @@ class TgmFileField(models.FileField):
         :param temporary_instance: An instance of TemporaryImageWrapper.
         :param raw_file: The raw file which was uploaded, can be None.
 
-        :returns: bool True if you want to automaticallly delete the temporary file after linking.
+        :returns: bool True if you want to mark this temporary file linked (linked files are cleaned up more often).
         """
         return True
 
@@ -128,7 +129,7 @@ class TgmFileField(models.FileField):
         }
         defaults.update(kwargs)
 
-        if defaults['widget'] is not TgmSingleUploadWidget and defaults['widget'] is not TgmMultiUploadWidget:
+        if not getattr(defaults['widget'], 'is_tgm_widget', False):
             del defaults['allowed_types']
             del defaults['form_class']
             del defaults['fq']
@@ -169,14 +170,16 @@ class TgmFileField(models.FileField):
                 the_file.save(filename, image_file, save=False)
 
                 the_file.field.generate_filename = old_pointer
-        elif the_file and not the_file._committed:
+        elif the_file and not the_file._committed and not getattr(self.widget, 'is_tgm_widget', False):
             # Commit the file to storage prior to saving the model
             # This makes this model work correctly with other widgets
             # (e.g. a plain image upload in admin)
             the_file.save(the_file.name, the_file, save=False)
 
         if self.post_link(model_instance, the_file.instance, the_file):
-            the_file.instance.delete()
+            if isinstance(the_file.instance, TemporaryFileWrapper):
+                the_file.instance.linked = True
+                the_file.instance.save()
 
         return the_file
 

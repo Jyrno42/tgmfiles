@@ -1,4 +1,5 @@
 import os
+import six
 
 from django.core.urlresolvers import reverse
 from django.forms import widgets, CheckboxInput
@@ -25,11 +26,13 @@ HTML = """
         </div>
 
         <label>
-            <img src="{file_url}">
+            <span class="image-area">
+                <img src="{file_url}">
+            </span>
 
             <span class="file-display">
                 <i class="fa fa-file"></i>
-                <span>{file_name}</span>
+                <span data-file-name="1">{file_name}</span>
             </span>
 
             <span class="upload-link"><i class="fa fa-cloud-upload"></i></span>
@@ -65,6 +68,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
         }
 
     widget_class = 'single-uploader'
+    is_tgm_widget = True
 
     def __init__(self, fq, is_image, attrs=None):
         self.field_query = fq
@@ -98,7 +102,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
         upload = data.get(self.md5sum_field_name(name), None)
         fq = data.get(self.fq_field_name(name), None)
 
-        if type(upload) == str and upload[:3] == 'id:':
+        if isinstance(upload, six.string_types) and upload[:3] == 'id:':
             # Pre uploaded linked file.
             return TemporaryFileWrapper.get_image_from_id(upload[3:], self.field_query)
 
@@ -151,6 +155,9 @@ class TgmSingleUploadWidget(widgets.FileInput):
 
         return False
 
+    def render_template(self, **kwargs):
+        return smart_unicode(HTML).format(**kwargs)
+
     def render(self, name, value, attrs=None):
         element_id = 'id'
         md5sum_field_value = ''
@@ -178,7 +185,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
 
         delete_field = self.render_delete_field(name, delete_val)
 
-        output = smart_unicode(HTML).format(
+        output = self.render_template(
             name=name,
             file_url=file_url,
             element_id=element_id,
@@ -192,6 +199,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
             file_name=file_name,
             max_size=get_max_file_size(),
             size_error=get_size_error(),
+            value=value,
         )
 
         return mark_safe(smart_unicode(output))
