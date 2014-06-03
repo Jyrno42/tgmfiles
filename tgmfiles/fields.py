@@ -1,4 +1,5 @@
 import os
+from django.db.models.fields.files import FieldFile
 import six
 
 from django import forms
@@ -143,50 +144,48 @@ class TgmFileField(models.FileField):
         return super(TgmFileField, self).formfield(**defaults)
 
     def get_file_path_pointer(self, model_instance):
+        field = self.get_field_pointer(model_instance)
+        if field is not None:
+            return field.upload_to
+        else:
+            return None
 
+    def get_field_pointer(self, model_instance):
         for field in model_instance._meta.fields:
             if field.name == self.field_query[1]:
                 if not isinstance(field, (TgmFileField, TgmImageField)):
                     raise Exception('Fields used in TGM Uploader must be instances of [TgmFileField, TgmImageField].')
 
-                return field.upload_to
+                return field
 
         return None
 
     def pre_save(self, model_instance, add):
         the_file = super(models.FileField, self).pre_save(model_instance, add)
+        real_file = the_file
 
-        # If the file provided resides in the temporary files directory.
-        if the_file and get_upload_path() in the_file.name:
-            new_pointer = self.get_file_path_pointer(model_instance)
-            if new_pointer is not None:
-                # This currently replaces the filename generator function
-                # with the correct one for the model field and then restores it after.
-                #
-                # I know this is insane, but i have no idea how to do it better
-                # (or why the function points to tgm_upload_file_name) so i'll let this
-                #  one slide for now.
-                old_pointer = the_file.field.generate_filename
-                the_file.field.generate_filename = new_pointer
+        # If the file provided is a Temporary One
+        if the_file and hasattr(the_file, 'instance') and isinstance(the_file.instance, TemporaryFileWrapper):
+            path, filename = os.path.split(the_file.name)
+            new_file = FieldFile(model_instance, self.get_field_pointer(model_instance), filename)
 
-                path, filename = os.path.split(the_file.name)
+            image_file = ContentFile(the_file.file.read(), the_file.name)
+            new_file.save(filename, image_file, save=False)
 
-                image_file = ContentFile(the_file.file.read(), the_file.name)
-                the_file.save(filename, image_file, save=False)
+            real_file = new_file
 
-                the_file.field.generate_filename = old_pointer
         elif the_file and not the_file._committed and not getattr(self.widget, 'is_tgm_widget', False):
             # Commit the file to storage prior to saving the model
             # This makes this model work correctly with other widgets
             # (e.g. a plain image upload in admin)
             the_file.save(the_file.name, the_file, save=False)
 
-        if self.post_link(model_instance, the_file.instance, the_file):
+        if self.post_link(model_instance, the_file.instance, real_file):
             if isinstance(the_file.instance, TemporaryFileWrapper):
                 the_file.instance.linked = True
                 the_file.instance.save()
 
-        return the_file
+        return real_file
 
 
 class TgmImageField(TgmFileField):
