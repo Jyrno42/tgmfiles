@@ -271,4 +271,6 @@
         });
     });
 
+    window.tgmSetupFunc = setup;
+
 })(window.jQuery);
