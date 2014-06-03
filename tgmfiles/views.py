@@ -8,13 +8,14 @@ from django.utils.encoding import force_text, smart_unicode
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
 
+from tgmfiles.models import FqCrypto
 from tgmfiles.fields import TgmFileField, TgmImageField
 from tgmfiles.forms import TemporaryFileForm, allowed_type
 
 
 class FileUploadView(View):
     http_method_names = ['post', ]
-    FQ_REGEX = re.compile(r'^FQ:([\w\d]+)\.([\w\d]+)\.([\w\d]+)$')
+    FQ_REGEX = re.compile(r'^FQ:([\w\d_]+)\.([\w\d]+)\.([\w\d]+)$')
 
     @staticmethod
     def json_response(response, status=200):
@@ -25,7 +26,7 @@ class FileUploadView(View):
     def parse_field_component(cls, component):
 
         if component[:3] != 'FQ:':
-            raise NotImplementedError('Encrypted field path is not supported yet.')
+            component = FqCrypto.decode(component)
 
         mat = cls.FQ_REGEX.match(component)
         if mat:

@@ -8,7 +8,7 @@ from django.utils.encoding import smart_unicode
 from django.utils.safestring import mark_safe
 
 from tgmfiles.forms import allowed_type
-from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, get_size_error
+from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, get_size_error, FqCrypto, fq_encrypt_disabled
 
 
 DELETE_FIELD_HTML = """
@@ -93,7 +93,18 @@ class TgmSingleUploadWidget(widgets.FileInput):
         return '%s_md5sum' % name
 
     def get_fq(self):
-        return 'FQ:%s' % self.field_query
+        fq = [
+            smart_unicode(self.field_query[0]._meta.app_label),
+            smart_unicode(self.field_query[0]._meta.object_name),
+            self.field_query[1],
+        ]
+
+        fq_val = 'FQ:%s' % '.'.join(fq)
+
+        if fq_encrypt_disabled():
+            return fq_val
+        else:
+            return FqCrypto.encode(fq_val)
 
     def get_required_state(self):
         return self.is_required

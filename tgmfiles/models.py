@@ -1,11 +1,12 @@
+import base64
 import hashlib
 import os
 import uuid
 
+from Crypto.Cipher import AES
+
 from django.conf import settings
-from django.contrib.sessions.models import Session
 from django.db import models
-from django.db.models import get_model
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.template.defaultfilters import filesizeformat
@@ -21,8 +22,16 @@ def get_expiry_time():
     return getattr(settings, 'TGM_EXPIRE_TIME', 60*60*24)
 
 
+def get_linked_expiry_time():
+    return getattr(settings, 'TGM_LINKED_EXPIRE_TIME', 60*60*6)
+
+
 def get_max_file_size():
     return getattr(settings, 'TGM_MAX_FILE_SIZE', 2*1024*1024)
+
+
+def fq_encrypt_disabled():
+    return getattr(settings, 'TGM_DISABLE_FQ_ENCRYPT', False)
 
 
 def get_size_error():
@@ -86,15 +95,14 @@ class TemporaryFileWrapper(models.Model):
         except (ValueError, TypeError):
             return None
         else:
-            field_component = field_query.split('.')
-            model = get_model(field_component[0], field_component[1])
+            model = field_query[0]
 
             try:
                 instance = model.objects.get(id=img_id)
             except model.DoesNotExist:
                 return None
             else:
-                return getattr(instance, field_component[2])
+                return getattr(instance, field_query[1])
 
 
 @receiver(post_delete, sender=TemporaryFileWrapper)
@@ -106,3 +114,38 @@ def cleanup_temporary_files(sender, instance, **kwargs):
     except IOError:
         pass
 
+
+class FqCrypto(object):
+    BLOCK_SIZE = 32
+    PADDING = '{'
+
+    @classmethod
+    def _pad(cls, s):
+        return s + (cls.BLOCK_SIZE - len(s) % cls.BLOCK_SIZE) * cls.PADDING
+
+    @classmethod
+    def _encode_aes(cls, c, s):
+        return base64.b64encode(c.encrypt(cls._pad(s)))
+
+    @classmethod
+    def _decode_aes(cls, c, e):
+        return c.decrypt(base64.b64decode(e)).rstrip(cls.PADDING)
+
+    @classmethod
+    def _cipher(cls):
+        secret = settings.SECRET_KEY
+
+        if len(secret) < cls.BLOCK_SIZE:
+            secret = cls._pad(secret)
+        else:
+            secret = secret[:cls.BLOCK_SIZE]
+
+        return AES.new(secret)
+
+    @classmethod
+    def decode(cls, value):
+        return cls._decode_aes(cls._cipher(), value)
+
+    @classmethod
+    def encode(cls, value):
+        return cls._encode_aes(cls._cipher(), value)

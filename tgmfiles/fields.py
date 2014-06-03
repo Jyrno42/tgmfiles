@@ -75,9 +75,9 @@ class TgmFormImageField(forms.ImageField):
 class TgmFileField(models.FileField):
     DEFAULT_FILE_TYPES = ['application/pdf', 'application/x-rar-compressed', 'application/zip']
 
-    def __init__(self, fq, post_link=None, allowed_types=None, widget=None, **kwargs):
+    def __init__(self, post_link=None, allowed_types=None, widget=None, **kwargs):
         self.widget = widget or self.get_widget_class()
-        self.field_query = fq
+        self.field_query = None
         self.max_length = 128
 
         # Used for validators
@@ -87,6 +87,12 @@ class TgmFileField(models.FileField):
             setattr(self, 'post_link', post_link)
 
         super(TgmFileField, self).__init__(**kwargs)
+
+    def contribute_to_class(self, cls, name):
+        self.field_query = [cls, name]
+
+        super(TgmFileField, self).contribute_to_class(cls, name)
+
 
     def post_link(self, real_instance, temporary_instance, raw_file):
         """ This function is used to provide a way for
@@ -137,10 +143,9 @@ class TgmFileField(models.FileField):
         return super(TgmFileField, self).formfield(**defaults)
 
     def get_file_path_pointer(self, model_instance):
-        field_name = self.field_query.split('.')[-1]
 
         for field in model_instance._meta.fields:
-            if field.name == field_name:
+            if field.name == self.field_query[1]:
                 if not isinstance(field, (TgmFileField, TgmImageField)):
                     raise Exception('Fields used in TGM Uploader must be instances of [TgmFileField, TgmImageField].')
 
@@ -197,3 +202,11 @@ class TgmImageField(TgmFileField):
 
     def formfield(self, **kwargs):
         return super(TgmImageField, self).formfield(**kwargs)
+
+
+try:
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([], ["^tgmfiles\.fields\.TgmFileField"])
+    add_introspection_rules([], ["^tgmfiles\.fields\.TgmImageField"])
+except ImportError:
+    pass
