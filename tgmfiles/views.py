@@ -50,6 +50,13 @@ class FileUploadView(View):
                 instance = form.save()
                 is_image_type = allowed_type(instance.content_type, TgmFileField.handle_allowed_types(['type:image']))
 
+                upload_icon = '<i class="fa fa-file"></i>'
+                if field_value.get_upload_image is not None:
+                    if callable(field_value.get_upload_image):
+                        upload_icon = field_value.get_upload_image(instance.file.path)
+                    else:
+                        upload_icon = smart_unicode(field_value.get_upload_image)
+
                 return self.json_response({
                     'success': True,
                     'file': {
@@ -57,7 +64,8 @@ class FileUploadView(View):
                         'md5sum': instance.md5sum,
                         'url': instance.file.url,
                         'file_name': instance.file.name,
-                        'instance_type': 'image' if is_image_type else 'file'
+                        'instance_type': 'image' if is_image_type else 'file',
+                        'upload_icon': upload_icon,
                     },
                 })
             else:

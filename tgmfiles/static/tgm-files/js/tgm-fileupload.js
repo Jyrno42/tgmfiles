@@ -245,6 +245,10 @@
                         var nameParts = data.result.file.file_name.split('/');
                         $el.find('[data-file-name]').text(nameParts[nameParts.length - 1]);
 
+                        var $dispArea = $el.find('.file-display');
+                        $dispArea.find('*:not([data-file-name="1"])').remove();
+                        $dispArea.prepend($(data.result.file.upload_icon));
+
                         $dropContainer.trigger('tgm_file_changed', [$el, $fileInput, nameParts[nameParts.length - 1]]);
 
                         toggleAddButton();

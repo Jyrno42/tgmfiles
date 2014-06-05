@@ -31,7 +31,7 @@ HTML = """
             </span>
 
             <span class="file-display">
-                <i class="fa fa-file"></i>
+                {file_upload_icon}
                 <span data-file-name="1">{file_name}</span>
             </span>
 
@@ -173,15 +173,18 @@ class TgmSingleUploadWidget(widgets.FileInput):
         element_id = 'id'
         md5sum_field_value = ''
         file_url = ''
+        file_path = ''
 
         if value:
             if hasattr(value, 'instance') and isinstance(value.instance, TemporaryFileWrapper):
                 # Case 1: Pre existing temporary-file in form.
                 md5sum_field_value = value.instance.md5sum
                 file_url = force_text(value.instance.file.url)
+                file_path = force_text(value.instance.file.path)
             elif hasattr(value, "url"):
                 # Case 2: Pre existing linked-file in form.
                 file_url = force_text(value.url)
+                file_path = force_text(value.path)
                 md5sum_field_value = 'id:%s' % value.instance.id
 
         classes = ['file-uploader', self.widget_class, 'has-image' if file_url else '']
@@ -211,9 +214,24 @@ class TgmSingleUploadWidget(widgets.FileInput):
             max_size=get_max_file_size(),
             size_error=get_size_error(),
             value=value,
+            file_path=file_path,
+            file_upload_icon=self.get_file_upload_icon_func(file_path),
         )
 
         return mark_safe(smart_unicode(output))
+
+    def get_file_upload_icon_func(self, file_path):
+
+        for field in self.field_query[0]._meta.fields:
+            if field.name == self.field_query[1]:
+                if hasattr(field, 'get_upload_image'):
+                    if field.get_upload_image is not None:
+                        if callable(field.get_upload_image):
+                            return field.get_upload_image(file_path)
+                        else:
+                            return smart_unicode(field.get_upload_image)
+
+        return '<i class="fa fa-file"></i>'
 
 
 class TgmMultiUploadWidget(TgmSingleUploadWidget):
