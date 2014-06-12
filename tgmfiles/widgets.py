@@ -12,7 +12,7 @@ from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, get_size_er
 
 
 DELETE_FIELD_HTML = """
-            <input type="checkbox" id="id-{clear_checkbox_name}" name="{clear_checkbox_name}" value='1' {delete_val} />
+            <input type="checkbox" id="id-{clear_checkbox_name}" data-del-field="1" name="{clear_checkbox_name}" value='1' {delete_val} />
 """
 
 HTML = """
@@ -181,7 +181,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
                 md5sum_field_value = value.instance.md5sum
                 file_url = force_text(value.instance.file.url)
                 file_path = force_text(value.instance.file.path)
-            elif hasattr(value, "url"):
+            elif hasattr(value, "url") and value.url != '/False':
                 # Case 2: Pre existing linked-file in form.
                 file_url = force_text(value.url)
                 file_path = force_text(value.path)

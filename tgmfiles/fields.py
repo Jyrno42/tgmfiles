@@ -181,8 +181,8 @@ class TgmFileField(models.FileField):
             # (e.g. a plain image upload in admin)
             the_file.save(the_file.name, the_file, save=False)
 
-        if self.post_link(model_instance, the_file.instance, real_file):
-            if isinstance(the_file.instance, TemporaryFileWrapper):
+        if self.post_link(model_instance, the_file.instance if the_file else the_file, real_file):
+            if the_file and isinstance(the_file.instance, TemporaryFileWrapper):
                 the_file.instance.linked = True
                 the_file.instance.save()
 

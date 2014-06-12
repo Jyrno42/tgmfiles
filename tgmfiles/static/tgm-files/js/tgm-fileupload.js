@@ -106,7 +106,7 @@
                     .find('input[name="' + $fileInput.attr('name').replace(/\-?[^\-]+$/, '-DELETE') + '"]');
             } else {
                 $deleteInput = $el
-                    .find('input[name="' + $fileInput.attr('name').replace(/\-?[^\-]+$/, '-DELETE') + '"]');
+                    .find('input[data-del-field="1"]');
             }
             toggleAddButton();
 

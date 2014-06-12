@@ -47,6 +47,8 @@ def tgm_upload_file_name(instance, filename):
         filename = filename[-40:]
 
     uuid_hex = uuid.uuid4().hex
+    # This removes "False" from the filename, which helps us to distinct between empty values in widgets. :)
+    filename = filename.replace('False', uuid_hex[3:8])
     return os.path.join(get_upload_path(), uuid_hex[:3], uuid_hex[3:], filename)
 
 
