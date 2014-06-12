@@ -181,7 +181,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
                 md5sum_field_value = value.instance.md5sum
                 file_url = force_text(value.instance.file.url)
                 file_path = force_text(value.instance.file.path)
-            elif hasattr(value, "url") and value.url != '/False':
+            elif hasattr(value, "url") and value.name != 'False':
                 # Case 2: Pre existing linked-file in form.
                 file_url = force_text(value.url)
                 file_path = force_text(value.path)
