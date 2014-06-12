@@ -28,7 +28,7 @@ class TgmFormFileField(forms.FileField):
             return temporary.content_type
 
         except TemporaryFileWrapper.DoesNotExist:
-            return 'application/unknown'
+            return None
 
     @staticmethod
     def file_type_error(content_type, allowed_types):
@@ -45,7 +45,7 @@ class TgmFormFileField(forms.FileField):
 
         if data:
             content_type = TgmFormFileField.get_content_type(data)
-            if not allowed_type(content_type, self.allowed_types):
+            if content_type is not None and not allowed_type(content_type, self.allowed_types):
                 self.file_type_error(content_type, self.allowed_types)
 
         return data
@@ -67,7 +67,7 @@ class TgmFormImageField(forms.ImageField):
         data = super(TgmFormImageField, self).to_python(data)
         if data:
             content_type = TgmFormFileField.get_content_type(data)
-            if not allowed_type(content_type, self.allowed_types):
+            if content_type is not None and not allowed_type(content_type, self.allowed_types):
                 TgmFormFileField.file_type_error(content_type, self.allowed_types)
 
         return data
