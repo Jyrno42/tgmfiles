@@ -119,6 +119,10 @@
                 return false;
             });
 
+            $dropContainer.find('.drop-mask').off('click.uploader').on('click.uploader', function () {
+                $fileInput.trigger('click');
+            });
+
             var maskCss = {
                 'position': 'absolute',
                 'left': '-' + $dropContainer.css('border-left-width'),

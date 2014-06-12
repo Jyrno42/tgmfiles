@@ -92,69 +92,77 @@
   white-space: nowrap;
 }
 /* line 93, ../sass/main.scss */
+.file-uploader [data-file-name] {
+  display: none;
+}
+/* line 97, ../sass/main.scss */
 .file-uploader .image-area {
   display: none;
   z-index: 8;
 }
-/* line 97, ../sass/main.scss */
+/* line 101, ../sass/main.scss */
 .file-uploader .image-area img {
   width: 100%;
   height: auto;
 }
-/* line 103, ../sass/main.scss */
+/* line 107, ../sass/main.scss */
 .file-uploader .upload-link {
   cursor: pointer;
   display: block;
   z-index: 9;
   font-size: 72px;
 }
-/* line 110, ../sass/main.scss */
+/* line 114, ../sass/main.scss */
 .file-uploader .progress-area {
   display: none;
 }
-/* line 113, ../sass/main.scss */
+/* line 117, ../sass/main.scss */
 .file-uploader .progress-area .progress {
   margin: 0;
 }
-/* line 119, ../sass/main.scss */
+/* line 123, ../sass/main.scss */
 .file-uploader.has-image .image-area {
   display: inherit;
 }
-/* line 123, ../sass/main.scss */
+/* line 127, ../sass/main.scss */
 .file-uploader.has-image .upload-link {
   display: none;
 }
-/* line 127, ../sass/main.scss */
+/* line 131, ../sass/main.scss */
 .file-uploader.has-image .close {
   display: inherit;
 }
-/* line 131, ../sass/main.scss */
+/* line 135, ../sass/main.scss */
 .file-uploader.has-image .display-with-file {
   display: inherit;
 }
 /* line 139, ../sass/main.scss */
+.file-uploader.has-image [data-file-name] {
+  display: inherit;
+}
+/* line 147, ../sass/main.scss */
 .file-uploader.with-progress .image-area,
 .file-uploader.with-progress .upload-link,
 .file-uploader.with-progress .close {
   display: none;
 }
-/* line 143, ../sass/main.scss */
+/* line 151, ../sass/main.scss */
 .file-uploader.with-progress .progress-area {
   display: inherit;
 }
-/* line 149, ../sass/main.scss */
+/* line 157, ../sass/main.scss */
 .file-uploader.is-file.has-image .image-area {
   display: none;
 }
-/* line 152, ../sass/main.scss */
+/* line 160, ../sass/main.scss */
 .file-uploader.is-file.has-image .file-display {
   display: block;
 }
-/* line 157, ../sass/main.scss */
+/* line 165, ../sass/main.scss */
 .file-uploader.multi-uploader {
   display: none;
 }
-/* line 161, ../sass/main.scss */
+/* line 169, ../sass/main.scss */
 .file-uploader.multi-uploader.has-image, .file-uploader.multi-uploader.with-progress {
   display: inherit;
 }
