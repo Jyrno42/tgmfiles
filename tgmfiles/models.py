@@ -34,6 +34,10 @@ def fq_encrypt_disabled():
     return getattr(settings, 'TGM_DISABLE_FQ_ENCRYPT', False)
 
 
+def show_in_admin():
+    return getattr(settings, 'TGM_ENABLE_ADMIN', True)
+
+
 def get_size_error():
     return smart_unicode(_("Uploaded file too large ( > %s )") % filesizeformat(get_max_file_size()))
 
