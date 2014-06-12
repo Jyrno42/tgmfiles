@@ -105,7 +105,8 @@
                 $deleteInput = $container
                     .find('input[name="' + $fileInput.attr('name').replace(/\-?[^\-]+$/, '-DELETE') + '"]');
             } else {
-                $deleteInput = $el.find('input[name="' + $fileInput.attr('name') + '-DELETE' + '"]');
+                $deleteInput = $el
+                    .find('input[name="' + $fileInput.attr('name').replace(/\-?[^\-]+$/, '-DELETE') + '"]');
             }
             toggleAddButton();
 
@@ -119,10 +120,6 @@
                 return false;
             });
 
-            $dropContainer.find('.drop-mask').off('click.uploader').on('click.uploader', function () {
-                $fileInput.trigger('click');
-            });
-
             var maskCss = {
                 'position': 'absolute',
                 'left': '-' + $dropContainer.css('border-left-width'),
@@ -131,6 +128,10 @@
                 'bottom': '-' + $dropContainer.css('border-bottom-width')
             };
             $dropContainer.append($('<div class="drop-mask"></div>').css(maskCss));
+
+            $dropContainer.find('.drop-mask').off('click.uploader').on('click.uploader', function () {
+                $fileInput.trigger('click');
+            });
 
             $dropContainer.find('.drop-mask').off('dragover dragleave dragend drop');
 
