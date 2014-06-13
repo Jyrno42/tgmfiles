@@ -129,9 +129,11 @@
             };
             $dropContainer.append($('<div class="drop-mask"></div>').css(maskCss));
 
-            $dropContainer.find('.drop-mask').off('click.uploader').on('click.uploader', function () {
-                $fileInput.trigger('click');
-            });
+            if (!is_multi) {
+                $dropContainer.find('.drop-mask').off('click.uploader').on('click.uploader', function () {
+                    $el.find('label').trigger('click');
+                });
+            }
 
             $dropContainer.find('.drop-mask').off('dragover dragleave dragend drop');
 

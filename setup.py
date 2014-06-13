@@ -8,7 +8,7 @@ f.close()
 
 setup(
     name='tgm-files',
-    version='0.1.28',
+    version='0.1.29',
     description='Stuff...',
     long_description=readme,
     author="Thorgate",
