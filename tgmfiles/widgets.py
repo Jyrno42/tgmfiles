@@ -4,7 +4,7 @@ import six
 from django.core.urlresolvers import reverse
 from django.forms import widgets, CheckboxInput
 from django.utils.encoding import force_text
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 
 from tgmfiles.forms import allowed_type
@@ -94,8 +94,8 @@ class TgmSingleUploadWidget(widgets.FileInput):
 
     def get_fq(self):
         fq = [
-            smart_unicode(self.field_query[0]._meta.app_label),
-            smart_unicode(self.field_query[0]._meta.object_name),
+            force_text(self.field_query[0]._meta.app_label),
+            force_text(self.field_query[0]._meta.object_name),
             self.field_query[1],
         ]
 
@@ -118,7 +118,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
             return TemporaryFileWrapper.get_image_from_id(upload[3:], self.field_query)
 
         if fq != self.get_fq():
-            raise Exception(smart_unicode('For some reason FQ value is wrong...'))
+            raise Exception(force_text('For some reason FQ value is wrong...'))
 
         was_deleted = CheckboxInput().value_from_datadict(data, files, self.clear_checkbox_name(name))
 
@@ -167,7 +167,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
         return False
 
     def render_template(self, **kwargs):
-        return smart_unicode(HTML).format(**kwargs)
+        return force_text(HTML).format(**kwargs)
 
     def render(self, name, value, attrs=None):
         element_id = 'id'
@@ -218,7 +218,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
             file_upload_icon=self.get_file_upload_icon_func(file_path),
         )
 
-        return mark_safe(smart_unicode(output))
+        return mark_safe(force_text(output))
 
     def get_file_upload_icon_func(self, file_path):
 
@@ -229,7 +229,7 @@ class TgmSingleUploadWidget(widgets.FileInput):
                         if callable(field.get_upload_image):
                             return field.get_upload_image(file_path)
                         else:
-                            return smart_unicode(field.get_upload_image)
+                            return force_text(field.get_upload_image)
 
         return '<i class="fa fa-file"></i>'
 

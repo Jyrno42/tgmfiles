@@ -4,7 +4,7 @@ import logging
 from django.core.management.base import NoArgsCommand
 from django.db.models import Q
 from django.utils import timezone
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import force_text
 
 from tgmfiles.models import TemporaryFileWrapper, get_linked_expiry_time, get_expiry_time
 
@@ -23,7 +23,7 @@ class Command(NoArgsCommand):
 
         logging.info('clean_temporary_files: Removing %d TemporaryFileWrapper objects from DB.', files.count())
         logging.debug('clean_temporary_files: Removing TemporaryFileWrapper objects [%s].',
-                      ', '.join([smart_unicode(x) for x in files.values_list('id', flat=True)]))
+                      ', '.join([force_text(x) for x in files.values_list('id', flat=True)]))
 
         files.delete()
 

@@ -4,7 +4,7 @@ import re
 from django.db.models import get_model, UnavailableApp
 from django.http.response import HttpResponse
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text, smart_unicode
+from django.utils.encoding import force_text
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
 
@@ -55,7 +55,7 @@ class FileUploadView(View):
                     if callable(field_value.get_upload_image):
                         upload_icon = field_value.get_upload_image(instance.file.path)
                     else:
-                        upload_icon = smart_unicode(field_value.get_upload_image)
+                        upload_icon = force_text(field_value.get_upload_image)
 
                 return self.json_response({
                     'success': True,
@@ -75,7 +75,7 @@ class FileUploadView(View):
 
         return self.json_response({
             'success': False,
-            'errors': smart_unicode(errors[0])
+            'errors': force_text(errors[0])
         }, status=403)
 
     @staticmethod

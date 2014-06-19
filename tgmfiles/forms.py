@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from tgmfiles.models import TemporaryFileWrapper, get_max_file_size, get_size_error
@@ -9,7 +9,7 @@ def allowed_type(file_type, allowed_types):
     if '*' in allowed_types:
         return True
 
-    return smart_unicode(file_type, 'utf8') in allowed_types
+    return force_text(file_type, 'utf8') in allowed_types
 
 
 class TemporaryFileForm(forms.ModelForm):
@@ -30,7 +30,7 @@ class TemporaryFileForm(forms.ModelForm):
             if uploaded_file._size > get_max_file_size():
                 raise forms.ValidationError(get_size_error())
         else:
-            raise forms.ValidationError(smart_unicode(_("Couldn't read uploaded file")))
+            raise forms.ValidationError(force_text(_("Couldn't read uploaded file")))
 
         if not allowed_type(uploaded_file.content_type, self.allowed_types):
             from tgmfiles.fields import TgmFormFileField
